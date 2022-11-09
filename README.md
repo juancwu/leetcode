@@ -1,1 +1,1 @@
-# LeetCode Grin
+# LeetCode Grind

@@ -1,21 +1,34 @@
-from bisect import insort
+from heapq import heappush, heappop
 class MedianFinder:
 
     def __init__(self):
         """
-        keep input values in a sorted array
-        so finding the median would be faster
+        use max-heap to keep lower half
+        use min-heap to keep higher half
+        when size is odd, the median is top of max-heap
+        when size is even, it can be derived from max-heap and min-heap
         """
-        self.values = []
+        self.maxheap = []
+        self.minheap = []
 
     def addNum(self, num: int) -> None:
-        insort(self.values, num)
+        if len(self.maxheap) == 0 or -self.maxheap[0] >= num:
+            heappush(self.maxheap, -num)
+        else:
+            heappush(self.minheap, num)
+        
+        if len(self.maxheap) > len(self.minheap) + 1:
+            heappush(self.minheap, -heappop(self.maxheap))
+        elif len(self.minheap) > len(self.maxheap):
+            heappush(self.maxheap, -heappop(self.minheap))
+        
 
     def findMedian(self) -> float:
-        n = len(self.values)
-        mid = n >> 1
-        median = self.values[mid] if n & 1 else (self.values[mid - 1] + self.values[mid]) / 2
-        return median
+        n = len(self.maxheap) + len(self.minheap)
+        if n & 1:
+            return -self.maxheap[0]
+        
+        return (-self.maxheap[0] + self.minheap[0]) / 2
 
 
 # Your MedianFinder object will be instantiated and called as such:
